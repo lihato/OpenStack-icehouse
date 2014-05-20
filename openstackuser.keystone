@@ -1,0 +1,39 @@
+#认证环境变量                                                                                                                                                          
+set -x
+export ctrl=ctrl.openstack.com
+export SERVICE_TOKEN="75d196a03f95a38d2505"
+export SERVICE_ENDPOINT="http://${ctrl}:35357/v2.0"
+#管理员用户admin
+keystone user-create --name=admin --pass=admin_pass --email=ADMIN_EMAIL
+keystone role-create --name=admin
+keystone tenant-create --name=admin --description="Admin Tenant"
+keystone user-role-add --user=admin --tenant=admin --role=admin
+keystone user-role-add --user=admin --role=_member_ --tenant=admin
+#普通用户demo
+keystone user-create --name=demo --pass=demo_pass --email=DEMO_EMAIL
+keystone tenant-create --name=demo --description="Demo Tenant"
+keystone user-role-add --user=demo --role=_member_ --tenant=demo
+#service tenant
+keystone tenant-create --name=service --description="Service Tenant"
+keystone service-create --name=keystone --type=identity --description="OpenStack Identity"
+keystone endpoint-create --service-id=$(keystone service-list | awk '/ identity / {print $2}') --publicurl=http://${ctrl}:5000/v2.0 --internalurl=http://${ctrl}:5000/v2.0 --adminurl=http://${ctrl}:35357/v2.0
+#keystone endpoint-create --service sahara --region regionOne --publicurl=http://${ctrl}:8386/v1.1/\(tenant_id\)s --adminurl=http://${ctrl}:8386/v1.1/\(tenant_id\)s --internalurl=http://${ctrl}:8386/v1.1/\(tenant_id\)s
+#映像服务glance用户
+keystone user-create --name=glance --pass=glance_pass --email=glance@example.com
+keystone user-role-add --user=glance --tenant=service --role=admin
+keystone service-create --name=glance --type=image --description="OpenStack Image Service"
+keystone endpoint-create --service-id=$(keystone service-list | awk '/ image / {print $2}') --publicurl=http://${ctrl}:9292 --internalurl=http://${ctrl}:9292 --adminurl=http://${ctrl}:9292
+#计算服务nova用户
+keystone user-create --name=nova --pass=nova_pass --email=nova@example.com
+keystone user-role-add --user=nova --tenant=service --role=admin
+keystone service-create --name=nova --type=compute --description="OpenStack Compute"
+keystone endpoint-create --service-id=$(keystone service-list | awk '/ compute / {print $2}') --publicurl=http://${ctrl}:8774/v2/%\(tenant_id\)s --internalurl=http://${ctrl}:8774/v2/%\(tenant_id\)s --adminurl=http://${ctrl}:8774/v2/%\(tenant_id\)s
+#网络neutorn用户
+keystone user-create --name neutron --pass neutron_pass --email neutron@example.com
+keystone user-role-add --user neutron --tenant service --role admin
+keystone service-create --name neutron --type network --description "OpenStack Networking"
+keystone endpoint-create --service-id $(keystone service-list | awk '/ network / {print $2}') --publicurl=http://${ctrl}:9696 --adminurl=http://${ctrl}:9696 --internalurl=http://${ctrl}:9696
+set +x
+unset ctrl
+unset SERVICE_TOKEN
+unset SERVICE_ENDPOINT
