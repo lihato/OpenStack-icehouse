@@ -14,3 +14,7 @@ GRANT ALL PRIVILEGES ON nova.* TO  'nova'@'%' IDENTIFIED BY 'NOVA_DBPASS';
 CREATE DATABASE neutron character set utf8;
 GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'localhost' IDENTIFIED BY 'NEUTRON_DBPASS';
 GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' IDENTIFIED BY 'NEUTRON_DBPASS';
+#块存储服务cinder用户及数据库
+CREATE DATABASE cinder character set utf8;
+GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'localhost' IDENTIFIED BY 'CINDER_DBPASS';
+GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'%' IDENTIFIED BY 'CINDER_DBPASS';
