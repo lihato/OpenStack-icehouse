@@ -33,6 +33,13 @@ keystone user-create --name neutron --pass neutron_pass --email neutron@example.
 keystone user-role-add --user neutron --tenant service --role admin
 keystone service-create --name neutron --type network --description "OpenStack Networking"
 keystone endpoint-create --service-id $(keystone service-list | awk '/ network / {print $2}') --publicurl=http://${ctrl}:9696 --adminurl=http://${ctrl}:9696 --internalurl=http://${ctrl}:9696
+#块存储服务cinder用户
+keystone user-create --name=cinder --pass=cinder_pass --email=cinder@example.com
+keystone user-role-add --user=cinder --tenant=service --role=admin
+keystone service-create --name=cinder --type=volume --description="Cinder Volume Service"
+keystone endpoint-create --service-id $(keystone service-list | awk '/ volume / {print $2}') --publicurl=http://${ctrl}:8776/v1/%\(tenant_id\)s --internalurl=http://${ctrl}:8776/v1/%\(tenant_id\)s --adminurl=http://${ctrl}:8776/v1/%\(tenant_id\)s
+keystone service-create --name=cinderv2 --type=volumev2 --description="Cinder Volume Service V2"
+keystone endpoint-create --service-id $(keystone service-list | awk '/ volumev2 / {print $2}') --publicurl=http://${ctrl}:8776/v2/%\(tenant_id\)s --internalurl=http://${ctrl}:8776/v2/%\(tenant_id\)s --adminurl=http://${ctrl}:8776/v2/%\(tenant_id\)s
 set +x
 unset ctrl
 unset SERVICE_TOKEN
